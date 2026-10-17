@@ -1,1 +1,69 @@
 
+
+name: RSS uudisteportaali uuendamine
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 * * * *"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "RSS_voogude_agregaator/**"
+      - ".github/workflows/rss-uudised.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Laadi GitHubi projekt
+        uses: actions/checkout@v4
+
+      - name: Paigalda .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Kaivita RSS agregaator
+        run: |
+          dotnet run --configuration Release --project RSS_voogude_agregaator/RSS_voogude_agregaator/RSS_voogude_agregaator.csproj
+
+      - name: Valmista veebileht ette
+        run: |
+          mkdir -p veebileht
+
+          cp RSS_voogude_agregaator/RSS_voogude_agregaator/bin/Release/net10.0/uudised.html veebileht/index.html
+
+          touch veebileht/.nojekyll
+
+      - name: Seadista GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Laadi veebileht ules
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: veebileht
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Avalda veebileht
+        id: deployment
+        uses: actions/deploy-pages@v4
