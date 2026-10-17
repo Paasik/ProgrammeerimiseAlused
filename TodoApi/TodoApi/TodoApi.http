@@ -1,0 +1,31 @@
+@TodoApi_HostAddress = https://localhost:7001
+
+### Lisa ülesanne
+POST {{TodoApi_HostAddress}}/api/todoitems
+Content-Type: application/json
+
+{
+  "name": "Tee Web API kodutöö",
+  "isComplete": true
+}
+
+### Küsi kõik ülesanded
+GET {{TodoApi_HostAddress}}/api/todoitems
+Accept: application/json
+
+### Küsi ülesanne ID järgi
+GET {{TodoApi_HostAddress}}/api/todoitems/1
+Accept: application/json
+
+### Muuda ülesannet
+PUT {{TodoApi_HostAddress}}/api/todoitems/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Tee Web API kodutöö",
+  "isComplete": true
+}
+
+### Kustuta ülesanne
+DELETE {{TodoApi_HostAddress}}/api/todoitems/1

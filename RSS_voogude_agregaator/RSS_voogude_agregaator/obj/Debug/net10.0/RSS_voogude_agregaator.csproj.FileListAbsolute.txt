@@ -1,0 +1,16 @@
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\bin\Debug\net10.0\RSS_voogude_agregaator.exe
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\bin\Debug\net10.0\RSS_voogude_agregaator.deps.json
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\bin\Debug\net10.0\RSS_voogude_agregaator.runtimeconfig.json
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\bin\Debug\net10.0\RSS_voogude_agregaator.dll
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\bin\Debug\net10.0\RSS_voogude_agregaator.pdb
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.AssemblyInfoInputs.cache
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.AssemblyInfo.cs
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.csproj.CoreCompileInputs.cache
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.sourcelink.json
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.dll
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\refint\RSS_voogude_agregaator.dll
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.pdb
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voogude_agregaator.genruntimeconfig.cache
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\ref\RSS_voogude_agregaator.dll
+C:\Users\ERKI\Documents\programmeerimise alused\repo\RSS_voogude_agregaator\RSS_voogude_agregaator\obj\Debug\net10.0\RSS_voog.EE1B8903.Up2Date

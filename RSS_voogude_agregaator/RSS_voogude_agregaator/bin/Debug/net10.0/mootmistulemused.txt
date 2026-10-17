@@ -1,0 +1,32 @@
+RSS-VOOGUDE KIIRUSE VÕRDLUS
+Mõõtmise aeg: 10.10.2026 11:53:09
+
+1. Järjestikune
+  RSS-voogude lugemine: 1485 ms
+  Katse koguaeg (koos HTML-iga): 1513 ms
+  Leitud uudiseid: 130
+
+2. Paralleelne Task.Run
+  RSS-voogude lugemine: 218 ms
+  Katse koguaeg (koos HTML-iga): 220 ms
+  Leitud uudiseid: 130
+
+3. Paralleelne async/await
+  RSS-voogude lugemine: 244 ms
+  Katse koguaeg (koos HTML-iga): 245 ms
+  Leitud uudiseid: 130
+
+Task.Run võrreldes järjestikusega:
+  RSS lugemine: kiirem 1266 ms; kiiruse suhe 6.81x
+  Kogu katse: kiirem 1293 ms; kiiruse suhe 6.87x
+
+Async/await võrreldes Task.Run-iga:
+  RSS lugemine: aeglasem 26 ms; aeglasem 1.12x
+  Kogu katse: aeglasem 25 ms; aeglasem 1.11x
+
+Async/await võrreldes järjestikusega:
+  RSS lugemine: kiirem 1240 ms; kiiruse suhe 6.08x
+  Kogu katse: kiirem 1268 ms; kiiruse suhe 6.17x
+
+Kogu programmi tööaeg (kõik kolm katset): 1996 ms
+Märkus: katsed loevad vooge korduvalt; võrguolud ja serveri vahemälu mõjutavad tulemusi.

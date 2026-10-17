@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "RSS_voogude_agregaator/1.0.0": {
+        "runtime": {
+          "RSS_voogude_agregaator.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "RSS_voogude_agregaator/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
