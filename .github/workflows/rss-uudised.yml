@@ -1,5 +1,5 @@
 
-name: VarskedUudised - RSS uudisteportaali uuendamine
+name: VarskedUudised - RSS veebileht
 
 on:
   workflow_dispatch:
@@ -17,6 +17,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: rss-pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,15 +34,33 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Taasta eelmine arhiiv
+        run: |
+          mkdir -p VarskedUudised/RSS_voogude_agregaator/bin/Release/net10.0
+
+          curl --fail --location --silent --show-error --max-time 20 \
+            -o VarskedUudised/RSS_voogude_agregaator/bin/Release/net10.0/arhiiv.json \
+            "https://paasik.github.io/ProgrammeerimiseAlused/VarskedUudised/arhiiv.json" \
+            || rm -f VarskedUudised/RSS_voogude_agregaator/bin/Release/net10.0/arhiiv.json
+
       - name: Kaivita RSS agregaator
         run: |
           dotnet run --configuration Release --project VarskedUudised/RSS_voogude_agregaator/RSS_voogude_agregaator.csproj
 
       - name: Valmista veebileht ette
         run: |
-          mkdir -p veebileht/VarskedUudised
+          OUTPUT="VarskedUudised/RSS_voogude_agregaator/bin/Release/net10.0"
+          DEST="veebileht/VarskedUudised"
 
-          cp VarskedUudised/RSS_voogude_agregaator/bin/Release/net10.0/uudised.html veebileht/VarskedUudised/index.html
+          mkdir -p "$DEST"
+
+          cp "$OUTPUT/uudised.html" "$DEST/index.html"
+          cp "$OUTPUT/arhiiv.json" "$DEST/arhiiv.json"
+
+          cp -R "$OUTPUT/wwwroot" "$DEST/wwwroot"
+
+          test -f "$DEST/wwwroot/style.css"
+          test -f "$DEST/wwwroot/site.js"
 
           touch veebileht/.nojekyll
 
