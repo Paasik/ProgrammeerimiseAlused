@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -6,210 +7,337 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-// Kolm katset kasutavad samu vooge. Voo aadress võib aja jooksul muutuda.
+// Uudisvoogude aadressid
 var vood = new Dictionary<string, string>
 {
 	["Postimees"] = "https://www.postimees.ee/rss",
 	["Äripäev"] = "https://feeds.feedburner.com/aripaev-rss",
 	["ERR"] = "https://www.err.ee/rss",
-	["Maaleht"] = "https://maaleht.delfi.ee/artikkel/23970575/rss",
+	["Maaleht"] =
+		"https://maaleht.delfi.ee/artikkel/23970575/rss",
 	["Delfi"] = "https://feeds2.feedburner.com/delfiuudised"
 };
 
-string htmlFail = Path.Combine(AppContext.BaseDirectory, "uudised.html");
-string tulemusteFail = Path.Combine(AppContext.BaseDirectory, "mootmistulemused.txt");
-var koguProgrammiKell = Stopwatch.StartNew();
+// Väljundfailid
+string kaust = AppContext.BaseDirectory;
 
-// HttpClient on mõeldud korduvaks kasutamiseks, ka mitme samaaegse päringu korral.
-using var klient = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-klient.DefaultRequestHeaders.UserAgent.ParseAdd("RSSAgregaator/1.0");
+string htmlFail = Path.Combine(
+	kaust, "uudised.html");
 
-Console.WriteLine("RSS-agregaatori kiiruskatse\n");
+string arhiiviFail = Path.Combine(
+	kaust, "arhiiv.json");
 
-// 1. katse: järjestikune töö (vana lahenduse mõõtmine)
-var esimene = await TeeKatseAsync("1. Järjestikune", () => LoeJarjestAsync());
+string tulemusteFail = Path.Combine(
+	kaust, "mootmistulemused.txt");
 
-// 2. katse: Task.Run ja ConcurrentBag
-var teine = await TeeKatseAsync("2. Paralleelne Task.Run", () => LoeParalleelseltTaskRunAsync());
+// Kogu programmi tööaja mõõtmine
+var koguKell = Stopwatch.StartNew();
 
-// 3. katse: optimeeritud võrgupäringud ilma tarbetu Task.Run ümbriseta
-var kolmas = await TeeKatseAsync("3. Paralleelne async/await", () => LoeParalleelseltAsync());
-
-koguProgrammiKell.Stop();
-
-var aruanne = new StringBuilder();
-aruanne.AppendLine("RSS-VOOGUDE KIIRUSE VÕRDLUS");
-aruanne.AppendLine($"Mõõtmise aeg: {DateTime.Now:dd.MM.yyyy HH:mm:ss}");
-aruanne.AppendLine();
-foreach (var tulemus in new[] { esimene, teine, kolmas })
+using var klient = new HttpClient
 {
-	aruanne.AppendLine(tulemus.Nimi);
-	aruanne.AppendLine($"  RSS-voogude lugemine: {tulemus.RssAeg.TotalMilliseconds:F0} ms");
-	aruanne.AppendLine($"  Katse koguaeg (koos HTML-iga): {tulemus.KoguAeg.TotalMilliseconds:F0} ms");
-	aruanne.AppendLine($"  Leitud uudiseid: {tulemus.UudisteArv}");
-	aruanne.AppendLine();
+	Timeout = TimeSpan.FromSeconds(20)
+};
+
+klient.DefaultRequestHeaders.UserAgent.ParseAdd(
+	"VarskedUudised/1.0");
+
+// Kolm kiiruskatset
+var katsed = new[]
+{
+	await Katse("Järjestikune", LoeJarjest),
+	await Katse("Task.Run + ConcurrentBag", LoeTaskRun),
+	await Katse("Paralleelne async/await", LoeAsync)
+};
+
+// Koondame uudised kõigist katsetest.
+// Kordused eemaldatakse NewsPage klassis.
+List<RssItem> koikUudised = katsed
+	.SelectMany(k => k.Uudised)
+	.ToList();
+
+// Uue HTML-lehe ja arhiivi loomine
+NewsPage.Save(
+	koikUudised,
+	htmlFail,
+	arhiiviFail);
+
+koguKell.Stop();
+
+// Kiiruskatsete aruanne
+var raport = new StringBuilder();
+
+raport.AppendLine("RSS-VOOGUDE KIIRUSE VÕRDLUS");
+
+raport.AppendLine(
+	$"Mõõdetud: {DateTime.Now:dd.MM.yyyy HH:mm:ss}");
+
+raport.AppendLine();
+
+foreach (var k in katsed)
+{
+	raport.AppendLine(
+		$"{k.Nimi}: RSS {k.RssAeg.TotalMilliseconds:F0} ms; " +
+		$"katse {k.KoguAeg.TotalMilliseconds:F0} ms; " +
+		$"{k.Uudised.Count} uudist");
 }
 
-LisaVordlus(aruanne, "Task.Run võrreldes järjestikusega", esimene, teine);
-LisaVordlus(aruanne, "Async/await võrreldes Task.Run-iga", teine, kolmas);
-LisaVordlus(aruanne, "Async/await võrreldes järjestikusega", esimene, kolmas);
-aruanne.AppendLine($"Kogu programmi tööaeg (kõik kolm katset): {koguProgrammiKell.Elapsed.TotalMilliseconds:F0} ms");
-aruanne.AppendLine("Märkus: katsed loevad vooge korduvalt; võrguolud ja serveri vahemälu mõjutavad tulemusi.");
+raport.AppendLine();
 
-File.WriteAllText(tulemusteFail, aruanne.ToString(), new UTF8Encoding(false));
-Console.WriteLine("\n" + aruanne);
-Console.WriteLine("Uudiste fail: " + htmlFail);
-Console.WriteLine("Mõõtmiste fail: " + tulemusteFail);
+if (katsed[1].RssAeg.TotalMilliseconds > 0)
+{
+	double kordaja =
+		katsed[0].RssAeg.TotalMilliseconds /
+		katsed[1].RssAeg.TotalMilliseconds;
 
-// Brauser avaneb alles pärast mõõtmiste lõppu; selle käivitusaeg ei kuulu mõõtmisse.
-try
-{
-	Process.Start(new ProcessStartInfo(htmlFail) { UseShellExecute = true });
-}
-catch (Exception ex)
-{
-	Console.WriteLine("Ava HTML-fail käsitsi. Brauseri avamise viga: " + ex.Message);
+	raport.AppendLine(
+		$"Task.Run võrreldes järjestikusega: {kordaja:F2}x");
 }
 
-async Task<KatseTulemus> TeeKatseAsync(string nimi, Func<Task<List<RssItem>>> lugemine)
-{
-	Console.WriteLine("Alustan: " + nimi);
-	var katseKell = Stopwatch.StartNew();
-	var rssKell = Stopwatch.StartNew();
-	List<RssItem> uudised = await lugemine();
-	rssKell.Stop();
+raport.AppendLine(
+	$"Kogu programmi aeg: " +
+	$"{koguKell.Elapsed.TotalMilliseconds:F0} ms");
 
-	// Kõikide voogude uudised sorteeritakse koos.
-	List<RssItem> viimased = uudised
-		.OrderByDescending(x => x.AvaldamiseAeg)
-		.Take(20)
-		.ToList();
+File.WriteAllText(
+	tulemusteFail,
+	raport.ToString(),
+	new UTF8Encoding(false));
 
-	SalvestaHtml(viimased, htmlFail);
-	katseKell.Stop();
-	Console.WriteLine($"Valmis: {nimi}, RSS {rssKell.Elapsed.TotalMilliseconds:F0} ms, kogu katse {katseKell.Elapsed.TotalMilliseconds:F0} ms\n");
-	return new KatseTulemus(nimi, rssKell.Elapsed, katseKell.Elapsed, uudised.Count);
-}
+Console.WriteLine(raport);
+Console.WriteLine("Veebileht: " + htmlFail);
+Console.WriteLine("Arhiiv: " + arhiiviFail);
 
-async Task<List<RssItem>> LoeJarjestAsync()
-{
-	var uudised = new List<RssItem>();
-	foreach (var voog in vood)
-	{
-		uudised.AddRange(await LoeVoogOhutultAsync(voog.Key, voog.Value));
-	}
-	return uudised;
-}
-
-async Task<List<RssItem>> LoeParalleelseltTaskRunAsync()
-{
-	var kogum = new ConcurrentBag<RssItem>();
-	var taskid = vood.Select(voog => Task.Run(async () =>
-	{
-		List<RssItem> yheVooUudised = await LoeVoogOhutultAsync(voog.Key, voog.Value);
-		foreach (var uudis in yheVooUudised)
-			kogum.Add(uudis);
-	})).ToArray();
-
-	await Task.WhenAll(taskid);
-	return kogum.ToList();
-}
-
-async Task<List<RssItem>> LoeParalleelseltAsync()
-{
-	// HTTP päring on asünkroonne I/O: Task.Run ei ole selle jaoks vajalik.
-	Task<List<RssItem>>[] taskid = vood
-		.Select(voog => LoeVoogOhutultAsync(voog.Key, voog.Value))
-		.ToArray();
-
-	List<RssItem>[] koikVood = await Task.WhenAll(taskid);
-	return koikVood.SelectMany(x => x).ToList();
-}
-
-async Task<List<RssItem>> LoeVoogOhutultAsync(string nimi, string url)
+// Windowsis avame lehe brauseris.
+// GitHub Actionsi Linuxis brauserit ei avata.
+if (OperatingSystem.IsWindows())
 {
 	try
 	{
-		string xml = await klient.GetStringAsync(url);
-		var dokument = XDocument.Parse(xml);
-		var tulemus = new List<RssItem>();
-		var kirjed = dokument.Descendants().Where(x => x.Name.LocalName is "item" or "entry");
+		Process.Start(
+			new ProcessStartInfo(htmlFail)
+			{
+				UseShellExecute = true
+			});
+	}
+	catch (Exception ex)
+	{
+		Console.WriteLine(
+			"Brauserit ei saanud avada: " + ex.Message);
+	}
+}
 
-		foreach (var kirje in kirjed)
+// Ühe kiiruskatse läbiviimine
+async Task<KatseTulemus> Katse(
+	string nimi,
+	Func<Task<List<RssItem>>> lugemine)
+{
+	var kogu = Stopwatch.StartNew();
+	var rss = Stopwatch.StartNew();
+
+	List<RssItem> uudised = await lugemine();
+
+	rss.Stop();
+
+	// LINQ: valime 20 värskeimat
+	var viimased = uudised
+		.OrderByDescending(u => u.AvaldamiseAeg)
+		.Take(20)
+		.ToList();
+
+	// Kiiruskatse HTML väljund
+	using (var fs = new FileStream(
+		Path.Combine(kaust, "katse.html"),
+		FileMode.Create,
+		FileAccess.Write))
+	using (var w = new StreamWriter(
+		fs, new UTF8Encoding(false)))
+	{
+		w.WriteLine("<!DOCTYPE html>");
+		w.WriteLine("<html lang=\"et\">");
+		w.WriteLine("<meta charset=\"utf-8\">");
+		w.WriteLine("<ul>");
+
+		foreach (var u in viimased)
 		{
-			string pealkiri = Vaartus(kirje, "title");
-			XElement? lingiElement = kirje.Elements().FirstOrDefault(x => x.Name.LocalName == "link");
-			string link = lingiElement?.Attribute("href")?.Value ?? lingiElement?.Value.Trim() ?? "";
-			string kirjeldus = Vaartus(kirje, "description");
-			if (string.IsNullOrWhiteSpace(kirjeldus)) kirjeldus = Vaartus(kirje, "summary");
-			if (string.IsNullOrWhiteSpace(kirjeldus)) kirjeldus = Vaartus(kirje, "content");
+			w.WriteLine(
+				$"<li><a href=\"{WebUtility.HtmlEncode(u.Link)}\">" +
+				$"{WebUtility.HtmlEncode(u.Pealkiri)}</a></li>");
+		}
 
-			string aeg = Vaartus(kirje, "pubDate");
-			if (string.IsNullOrWhiteSpace(aeg)) aeg = Vaartus(kirje, "published");
-			if (string.IsNullOrWhiteSpace(aeg)) aeg = Vaartus(kirje, "updated");
-			if (!DateTimeOffset.TryParse(aeg, CultureInfo.InvariantCulture,
-					DateTimeStyles.AllowWhiteSpaces, out var avaldamiseAeg)) continue;
-			if (string.IsNullOrWhiteSpace(pealkiri) ||
-				!Uri.TryCreate(link, UriKind.Absolute, out var uri) ||
-				(uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)) continue;
+		w.WriteLine("</ul></html>");
+	}
 
-			kirjeldus = Regex.Replace(kirjeldus, "<[^>]*>", " ");
-			kirjeldus = WebUtility.HtmlDecode(kirjeldus);
-			kirjeldus = Regex.Replace(kirjeldus, @"\s+", " ").Trim();
+	kogu.Stop();
+
+	Console.WriteLine(
+		$"{nimi}: {uudised.Count} uudist, " +
+		$"{rss.Elapsed.TotalMilliseconds:F0} ms");
+
+	return new KatseTulemus(
+		nimi,
+		rss.Elapsed,
+		kogu.Elapsed,
+		uudised);
+}
+
+// Järjestikune lugemine
+async Task<List<RssItem>> LoeJarjest()
+{
+	var tulemus = new List<RssItem>();
+
+	foreach (var v in vood)
+	{
+		tulemus.AddRange(
+			await LoeVoog(v.Key, v.Value));
+	}
+
+	return tulemus;
+}
+
+// Paralleelne Task.Run + ConcurrentBag
+async Task<List<RssItem>> LoeTaskRun()
+{
+	var bag = new ConcurrentBag<RssItem>();
+
+	var taskid = vood.Select(v =>
+		Task.Run(async () =>
+		{
+			List<RssItem> uudised =
+				await LoeVoog(v.Key, v.Value);
+
+			foreach (RssItem u in uudised)
+			{
+				bag.Add(u);
+			}
+		}));
+
+	await Task.WhenAll(taskid);
+
+	return bag.ToList();
+}
+
+// Paralleelne async/await
+async Task<List<RssItem>> LoeAsync()
+{
+	var tulemused = await Task.WhenAll(
+		vood.Select(v => LoeVoog(v.Key, v.Value)));
+
+	return tulemused
+		.SelectMany(x => x)
+		.ToList();
+}
+
+// Ühe RSS-voo lugemine
+async Task<List<RssItem>> LoeVoog(
+	string nimi,
+	string url)
+{
+	var tulemus = new List<RssItem>();
+
+	try
+	{
+		string xml = await klient.GetStringAsync(url);
+		XDocument doc = XDocument.Parse(xml);
+
+		var kirjed = doc.Descendants()
+			.Where(x =>
+				x.Name.LocalName is "item" or "entry");
+
+		foreach (var item in kirjed)
+		{
+			string pealkiri =
+				Puhasta(Vaartus(item, "title"));
+
+			var linkElement = item.Elements()
+				.FirstOrDefault(x =>
+					x.Name.LocalName == "link");
+
+			string link =
+				linkElement?.Attribute("href")?.Value ??
+				linkElement?.Value.Trim() ?? "";
+
+			string kirjeldus =
+				Vaartus(item, "description");
+
+			if (string.IsNullOrEmpty(kirjeldus))
+				kirjeldus = Vaartus(item, "summary");
+
+			if (string.IsNullOrEmpty(kirjeldus))
+				kirjeldus = Vaartus(item, "content");
+
+			string aeg = Vaartus(item, "pubDate");
+
+			if (string.IsNullOrEmpty(aeg))
+				aeg = Vaartus(item, "published");
+
+			if (string.IsNullOrEmpty(aeg))
+				aeg = Vaartus(item, "updated");
+
+			if (!DateTimeOffset.TryParse(
+				aeg,
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.AllowWhiteSpaces,
+				out var avaldamiseAeg))
+			{
+				continue;
+			}
+
+			if (!Uri.TryCreate(
+					link,
+					UriKind.Absolute,
+					out var uri) ||
+				uri.Scheme is not ("http" or "https") ||
+				pealkiri.Length == 0)
+			{
+				continue;
+			}
+
 			tulemus.Add(new RssItem
 			{
 				Pealkiri = pealkiri,
 				Link = link,
-				Kirjeldus = kirjeldus,
+				Kirjeldus = Puhasta(kirjeldus),
 				Valjaanne = nimi,
 				AvaldamiseAeg = avaldamiseAeg
 			});
 		}
-		Console.WriteLine($"  {nimi}: {tulemus.Count} uudist");
-		return tulemus;
 	}
 	catch (Exception ex)
 	{
-		Console.WriteLine($"  {nimi}: viga - {ex.Message}");
-		return new List<RssItem>();
+		Console.WriteLine(
+			$"{nimi}: RSS-viga: {ex.Message}");
 	}
+
+	return tulemus;
 }
 
-static string Vaartus(XElement element, string nimi) =>
-	element.Elements().FirstOrDefault(x => x.Name.LocalName == nimi)?.Value.Trim() ?? "";
-
-static void SalvestaHtml(List<RssItem> uudised, string failitee)
+// XML-elemendi väärtus
+static string Vaartus(XElement x, string nimi)
 {
-	using var fail = new FileStream(failitee, FileMode.Create, FileAccess.Write);
-	using var writer = new StreamWriter(fail, new UTF8Encoding(false));
-	writer.WriteLine("<!doctype html><html lang=\"et\"><head><meta charset=\"utf-8\"><title>Viimased 20 uudist</title>");
-	writer.WriteLine("<style>body{font-family:Arial,sans-serif;max-width:850px;margin:35px auto;padding:16px;background:#f5f6f8}li{background:#fff;padding:16px;margin:12px 0;border-radius:8px}a{font-weight:bold;color:#175b9b}.meta{color:#666;margin:8px 0}ul{list-style:none;padding:0}</style></head><body>");
-	writer.WriteLine("<h1>20 viimast uudist</h1><ul>");
-	foreach (RssItem uudis in uudised)
+	return x.Elements()
+		.FirstOrDefault(e => e.Name.LocalName == nimi)
+		?.Value.Trim() ?? "";
+}
+
+// Puhastame RSS-tekstist HTML-märgendid
+static string Puhasta(string tekst)
+{
+	// Näiteks <em>performance</em>
+	// muutub tavaliseks sõnaks performance.
+	for (int i = 0; i < 2; i++)
 	{
-		writer.WriteLine("<li>");
-		writer.WriteLine($"<a href=\"{WebUtility.HtmlEncode(uudis.Link)}\">{WebUtility.HtmlEncode(uudis.Pealkiri)}</a><br />");
-		writer.WriteLine($"<div class=\"meta\">{uudis.AvaldamiseAeg.ToLocalTime():dd.MM.yyyy HH:mm} | {WebUtility.HtmlEncode(uudis.Valjaanne)}</div>");
-		writer.WriteLine($"{WebUtility.HtmlEncode(uudis.Kirjeldus)}");
-		writer.WriteLine("</li>");
+		tekst = WebUtility.HtmlDecode(tekst);
 	}
-	writer.WriteLine("</ul></body></html>");
+
+	tekst = Regex.Replace(
+		tekst, "<[^>]+>", " ");
+
+	return Regex.Replace(
+		tekst, @"\s+", " ").Trim();
 }
 
-static void LisaVordlus(StringBuilder tekst, string nimi, KatseTulemus enne, KatseTulemus parast)
-{
-	tekst.AppendLine(nimi + ":");
-	LisaAegVordlus(tekst, "RSS lugemine", enne.RssAeg, parast.RssAeg);
-	LisaAegVordlus(tekst, "Kogu katse", enne.KoguAeg, parast.KoguAeg);
-	tekst.AppendLine();
-}
-
-static void LisaAegVordlus(StringBuilder tekst, string silt, TimeSpan enne, TimeSpan parast)
-{
-	double vahe = (enne - parast).TotalMilliseconds;
-	double kordaja = parast.TotalMilliseconds > 0 ? enne.TotalMilliseconds / parast.TotalMilliseconds : 0;
-	tekst.AppendLine($"  {silt}: {(vahe >= 0 ? "kiirem" : "aeglasem")} {Math.Abs(vahe):F0} ms; " +
-		(vahe >= 0 ? $"kiiruse suhe {kordaja:F2}x" : $"aeglasem {1 / Math.Max(kordaja, 0.000001):F2}x"));
-}
-
-record KatseTulemus(string Nimi, TimeSpan RssAeg, TimeSpan KoguAeg, int UudisteArv);
+// Kiiruskatse andmed
+record KatseTulemus(
+	string Nimi,
+	TimeSpan RssAeg,
+	TimeSpan KoguAeg,
+	List<RssItem> Uudised);

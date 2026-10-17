@@ -1,0 +1,351 @@
+﻿
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+	--background: #F6F2EB;
+	--ink: #513E46;
+	--muted: #746F70;
+	--primary: #26665D;
+	--coral: #E66B50;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--background);
+	color: var(--ink);
+	font-family: "Noto Sans", sans-serif;
+	letter-spacing: 0.025em;
+}
+
+/* PÄIS */
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	padding: 20px 32px;
+	background: #FFFCF8;
+	border-bottom: 1px solid #E8DFD6;
+}
+
+.header-left {
+	display: flex;
+	align-items: center;
+	gap: 17px;
+}
+
+.site-name {
+	font-family: "Oswald", sans-serif;
+	font-weight: 700;
+	font-size: 29px;
+	letter-spacing: 0.055em;
+}
+
+	.site-name span {
+		color: var(--coral);
+	}
+
+.menu-button {
+	width: 44px;
+	height: 44px;
+	border: none;
+	border-radius: 9px;
+	background: var(--primary);
+	color: white;
+	font-size: 23px;
+	cursor: pointer;
+}
+
+	.menu-button:hover {
+		background: #398579;
+	}
+
+.updated {
+	font-size: 12px;
+	color: var(--muted);
+}
+
+/* LEHE SISU */
+
+main {
+	max-width: 1200px;
+	margin: auto;
+	padding: 36px 24px;
+}
+
+.subtitle {
+	font-size: 13px;
+	color: #806F68;
+	margin: 0;
+}
+
+h1 {
+	font-family: "Oswald", sans-serif;
+	font-size: 36px;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	margin: 6px 0 26px;
+}
+
+/* UUDISTEKAARDID */
+
+.news-grid {
+	list-style: none;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	padding: 0;
+	margin: 0;
+}
+
+	.news-grid li {
+		min-width: 0;
+	}
+
+.news-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 250px;
+	background: white;
+	border: 1px solid #E9E1DA;
+	border-top: 7px solid var(--accent);
+	border-radius: 12px;
+	padding: 22px;
+	color: var(--ink);
+	text-decoration: none;
+	overflow-wrap: anywhere;
+	transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+	.news-card:hover,
+	.news-card:focus-visible {
+		background: var(--hover);
+		transform: translateY(-3px);
+		box-shadow: 0 10px 24px rgba(81, 62, 70, 0.12);
+	}
+
+.news-top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.news-source {
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+
+/* LOGODE CSS ON AJUTISELT VÄLJA LÜLITATUD.
+
+.news-logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 106px;
+    height: 40px;
+    padding: 5px;
+    background: white;
+    border-radius: 7px;
+}
+
+.news-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+*/
+
+/* PEALKIRJAD */
+
+.news-title {
+	font-family: "Oswald", sans-serif;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.35;
+	letter-spacing: 0.045em;
+	margin: 20px 0 12px;
+}
+
+/* KIRJELDUSED */
+
+.news-summary {
+	font-family: "Noto Sans Old Persian", "Noto Sans", sans-serif;
+	font-size: 14px;
+	line-height: 1.85;
+	letter-spacing: 0.025em;
+	color: #67585C;
+	margin: 0;
+}
+
+.news-bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin-top: auto;
+	padding-top: 20px;
+}
+
+.news-time {
+	font-size: 12px;
+	color: #807875;
+}
+
+.read-more {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--accent);
+}
+
+/* VÄLJAANNETE VÄRVID */
+
+.err {
+	--accent: #D76A50;
+	--hover: #FFF4EF;
+}
+
+.postimees {
+	--accent: #4E8066;
+	--hover: #F0F8F2;
+}
+
+.aripaev {
+	--accent: #B88A33;
+	--hover: #FFF8E9;
+}
+
+.delfi {
+	--accent: #905E83;
+	--hover: #FAF1F8;
+}
+
+.maaleht {
+	--accent: #B45D42;
+	--hover: #FFF1E9;
+}
+
+/* ARHIIVI HÜPIKAKEN */
+
+.archive-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+	background: rgba(64, 44, 51, 0.55);
+}
+
+	.archive-overlay.open {
+		display: flex;
+	}
+
+.archive-modal {
+	width: 100%;
+	max-width: 650px;
+	max-height: 85vh;
+	overflow-y: auto;
+	background: #FFFCF8;
+	border-radius: 15px;
+	padding: 28px;
+	box-shadow: 0 20px 60px rgba(50, 35, 40, 0.25);
+}
+
+.archive-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+	.archive-header h2 {
+		font-family: "Oswald", sans-serif;
+		font-weight: 700;
+		font-size: 27px;
+		letter-spacing: 0.045em;
+		margin: 0;
+	}
+
+.close-button {
+	background: #EEE5DF;
+	color: var(--ink);
+	border: none;
+	border-radius: 8px;
+	padding: 8px 12px;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.archive-list {
+	list-style: none;
+	padding: 0;
+}
+
+.archive-item {
+	border-bottom: 1px solid #E8DFD6;
+	padding: 14px 0;
+}
+
+	.archive-item a {
+		font-weight: 600;
+		color: var(--ink);
+		text-decoration: none;
+	}
+
+		.archive-item a:hover {
+			color: var(--primary);
+		}
+
+.archive-meta {
+	display: block;
+	font-size: 12px;
+	color: var(--muted);
+	margin-top: 5px;
+}
+
+/* MOBIILIVAADE */
+
+@media (max-width: 700px) {
+	header {
+		padding: 15px;
+	}
+
+	.site-name {
+		font-size: 23px;
+	}
+
+	.updated {
+		font-size: 10px;
+	}
+
+	main {
+		padding: 24px 16px;
+	}
+
+	h1 {
+		font-size: 30px;
+	}
+
+	.news-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.news-card {
+		min-height: 220px;
+	}
+
+	.news-title {
+		font-size: 22px;
+	}
+}

@@ -1,4 +1,5 @@
-﻿public class RssItem
+﻿
+public class RssItem
 {
 	public string Pealkiri { get; set; } = "";
 	public string Link { get; set; } = "";
