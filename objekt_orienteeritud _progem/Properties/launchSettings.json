@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "objekt_orienteeritud _progem": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
