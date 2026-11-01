@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RSS_voogude_agregaator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+671e79622fa8ac4f9ff46e4fb23f1b3c3c441f2e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53bcc839f551abe902fa2d664fe925d4c948f088")]
 [assembly: System.Reflection.AssemblyProductAttribute("RSS_voogude_agregaator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RSS_voogude_agregaator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

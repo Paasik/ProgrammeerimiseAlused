@@ -1,13 +1,17 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\RSS_voogude_agregaator\\",
+  "WorkspaceRootPath": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|c:\\users\\erki\\documents\\programmeerimise alused\\repo\\rss_voogude_agregaator\\rss_voogude_agregaator\\rssitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|c:\\users\\erki\\documents\\programmeerimise alused\\repo\\varskeduudised\\rss_voogude_agregaator\\rss_voogude_agregaator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|solutionrelative:rss_voogude_agregaator\\rss_voogude_agregaator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|c:\\users\\erki\\documents\\programmeerimise alused\\repo\\varskeduudised\\rss_voogude_agregaator\\rssitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|solutionrelative:rss_voogude_agregaator\\rssitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|c:\\users\\erki\\documents\\programmeerimise alused\\repo\\rss_voogude_agregaator\\rss_voogude_agregaator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|c:\\users\\erki\\documents\\programmeerimise alused\\repo\\varskeduudised\\rss_voogude_agregaator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E049A19A-8AD6-C1A1-5066-22FFAEA0BA55}|RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj|solutionrelative:rss_voogude_agregaator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -23,23 +27,36 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "RSS_voogude_agregaator",
+              "DocumentMoniker": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj",
+              "RelativeDocumentMoniker": "RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj",
+              "ToolTip": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj",
+              "RelativeToolTip": "RSS_voogude_agregaator\\RSS_voogude_agregaator.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-10-17T16:35:19.059Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "RssItem.cs",
-              "DocumentMoniker": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\RSS_voogude_agregaator\\RSS_voogude_agregaator\\RssItem.cs",
+              "DocumentMoniker": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\RssItem.cs",
               "RelativeDocumentMoniker": "RSS_voogude_agregaator\\RssItem.cs",
-              "ToolTip": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\RSS_voogude_agregaator\\RSS_voogude_agregaator\\RssItem.cs",
+              "ToolTip": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\RssItem.cs",
               "RelativeToolTip": "RSS_voogude_agregaator\\RssItem.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAA+wAgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAA8wAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-10T08:32:18.345Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\RSS_voogude_agregaator\\RSS_voogude_agregaator\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\Program.cs",
               "RelativeDocumentMoniker": "RSS_voogude_agregaator\\Program.cs",
-              "ToolTip": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\RSS_voogude_agregaator\\RSS_voogude_agregaator\\Program.cs",
+              "ToolTip": "C:\\Users\\ERKI\\Documents\\programmeerimise alused\\repo\\VarskedUudised\\RSS_voogude_agregaator\\Program.cs",
               "RelativeToolTip": "RSS_voogude_agregaator\\Program.cs",
               "ViewState": "AgIAAMYAAAAAAAAAAAA0wNcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
